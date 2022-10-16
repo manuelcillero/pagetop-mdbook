@@ -1,0 +1,4 @@
+**/target
+**/log/*.log*
+Cargo.lock
+workdir
