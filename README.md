@@ -3,20 +3,19 @@ en un proyecto web creado con **PageTop**.
 
 [PageTop](https://github.com/manuelcillero/pagetop), es un entorno de desarrollo basado en algunos
 de los *crates* más estables y populares del ecosistema Rust para proporcionar APIs, patrones de
-desarrollo y buenas prácticas para la creación de soluciones web SSR (*Server-Side Rendering*).
+desarrollo y buenas prácticas para crear soluciones web SSR (*Server-Side Rendering*).
 
 
 # 🚧 Advertencia
 
-Actualmente sólo se liberan versiones de desarrollo de **PageTop**. En este contexto la API no tiene
-ninguna estabilidad y los cambios son constantes. No puede considerarse para producción hasta que se
-haya liberado la versión **0.1.0**.
+**PageTop** sólo libera actualmente versiones de desarrollo. La API no es estable y los cambios son
+constantes. No puede considerarse preparado hasta que se libere la versión **0.1.0**.
 
 
 # 📜 Licencia
 
-Este proyecto tiene licencia, de hecho tiene dos, puedes usarlo en tus propios proyectos si aplicas
-cualquiera de las siguientes a tu elección:
+Este proyecto tiene licencia, de hecho tiene dos, puedes aplicar cualquiera de las siguientes a tu
+elección:
 
 * Licencia Apache versión 2.0
   ([LICENSE-APACHE](https://github.com/manuelcillero/pagetop-mdbook/blob/main/LICENSE-APACHE) o
