@@ -2,40 +2,40 @@ use pagetop::prelude::*;
 
 pub mod util;
 
-pub_const_handler!(MODULE_MDBOOK);
+pub_handle!(MODULE_MDBOOK);
 
 include!(concat!(env!("OUT_DIR"), "/mdbook.rs"));
 
 pub struct MdBook;
 
 impl ModuleTrait for MdBook {
-    fn handler(&self) -> Handler {
+    fn handle(&self) -> Handle {
         MODULE_MDBOOK
     }
 }
 
 impl MdBook {
-    pub fn configure_service_for_common_resources(cfg: &mut app::web::ServiceConfig) {
-        configure_service_for_static_files!(cfg, "/mdbook/static", bundle_mdbook);
+    pub fn configure_service_for_common_resources(cfg: &mut server::web::ServiceConfig) {
+        serve_static_files!(cfg, "/mdbook/static", bundle_mdbook);
     }
 
     pub fn configure_service_for_mdbook(
-        cfg: &mut app::web::ServiceConfig,
+        cfg: &mut server::web::ServiceConfig,
         mdbook_path: &'static str,
         mdbook_map: &'static HashMapResources,
     ) {
         let path = mdbook_path.trim_end_matches('/');
         cfg.service(
-            app::web::scope(path)
+            server::web::scope(path)
                 .route(
                     "{tail:.*html$}",
-                    app::web::get().to(move |request: app::HttpRequest| {
+                    server::web::get().to(move |request: server::HttpRequest| {
                         mdbook_page(request, path, mdbook_map)
                     }),
                 )
                 .route(
                     "{tail:.*$}",
-                    app::web::get().to(move |request: app::HttpRequest| {
+                    server::web::get().to(move |request: server::HttpRequest| {
                         mdbook_resource(request, path, mdbook_map)
                     }),
                 ),
@@ -44,7 +44,7 @@ impl MdBook {
 }
 
 async fn mdbook_page(
-    request: app::HttpRequest,
+    request: server::HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
 ) -> ResultPage<Markup, FatalError> {
@@ -66,38 +66,38 @@ async fn mdbook_page(
                 }
             };
 
-            Page::new()
+            Page::new(request)
                 .with_title(title)
-                .with_context(PageOp::AddMetadata("theme-color", "#ffffff"))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_metadata("theme-color", "#ffffff")
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/css/variables.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/css/general.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/css/chrome.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(
+                .with_context(ContextOp::AddStyleSheet(
                     StyleSheet::located("/mdbook/static/css/print.css")
                         .for_media(TargetMedia::Print),
                 ))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/FontAwesome/css/font-awesome.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/fonts/fonts.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/highlight.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/tomorrow-night.css",
                 )))
-                .with_context(PageOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/static/ayu-highlight.css",
                 )))
-                .add_to(
+                .with_this_in(
                     "region-content",
                     Container::new()
                         .with_id("mdbook")
@@ -105,23 +105,23 @@ async fn mdbook_page(
                 )
                 .render()
         } else {
-            Err(FatalError::NotFound)
+            Err(FatalError::NotFound(request))
         }
     } else {
-        Err(FatalError::NotFound)
+        Err(FatalError::NotFound(request))
     }
 }
 
 async fn mdbook_resource(
-    request: app::HttpRequest,
+    request: server::HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
-) -> app::HttpResponse {
+) -> server::HttpResponse {
     let path_len = mdbook_path.len() + 1;
     // From https://github.com/kilork/actix-web-static-files/blob/master/src/resource_files.rs, see
     // functions respond_to(), any_match() and none_match().
     if let Some(file) = &mdbook_map.get(&request.path()[path_len..]) {
-        let etag = Some(app::http::header::EntityTag::new_strong(format!(
+        let etag = Some(server::http::header::EntityTag::new_strong(format!(
             "{:x}:{:x}",
             file.data.len(),
             file.modified
@@ -131,30 +131,30 @@ async fn mdbook_resource(
 
         let not_modified = !none_match(etag.as_ref(), &request);
 
-        let mut resp = app::HttpResponse::build(app::http::StatusCode::OK);
-        resp.insert_header((app::http::header::CONTENT_TYPE, file.mime_type));
+        let mut resp = server::HttpResponse::build(server::http::StatusCode::OK);
+        resp.insert_header((server::http::header::CONTENT_TYPE, file.mime_type));
 
         if let Some(etag) = etag {
-            resp.insert_header(app::http::header::ETag(etag));
+            resp.insert_header(server::http::header::ETag(etag));
         }
 
         if precondition_failed {
-            return FatalError::PreconditionFailed.error_response();
+            return FatalError::PreconditionFailed(request).error_response();
         } else if not_modified {
-            return FatalError::NotModified.error_response();
+            return FatalError::NotModified(request).error_response();
         }
 
         resp.body(file.data)
     } else {
-        FatalError::NotFound.error_response()
+        FatalError::NotFound(request).error_response()
     }
 }
 
 /// Returns true if `request` has no `If-Match` header or one which matches `etag`.
-fn any_match(etag: Option<&app::http::header::EntityTag>, request: &app::HttpRequest) -> bool {
-    match request.get_header::<app::http::header::IfMatch>() {
-        None | Some(app::http::header::IfMatch::Any) => true,
-        Some(app::http::header::IfMatch::Items(ref items)) => {
+fn any_match(etag: Option<&server::http::header::EntityTag>, request: &server::HttpRequest) -> bool {
+    match request.get_header::<server::http::header::IfMatch>() {
+        None | Some(server::http::header::IfMatch::Any) => true,
+        Some(server::http::header::IfMatch::Items(ref items)) => {
             if let Some(some_etag) = etag {
                 for item in items {
                     if item.strong_eq(some_etag) {
@@ -168,10 +168,10 @@ fn any_match(etag: Option<&app::http::header::EntityTag>, request: &app::HttpReq
 }
 
 /// Returns true if `request` doesn't have an `If-None-Match` header matching `req`.
-fn none_match(etag: Option<&app::http::header::EntityTag>, request: &app::HttpRequest) -> bool {
-    match request.get_header::<app::http::header::IfNoneMatch>() {
-        Some(app::http::header::IfNoneMatch::Any) => false,
-        Some(app::http::header::IfNoneMatch::Items(ref items)) => {
+fn none_match(etag: Option<&server::http::header::EntityTag>, request: &server::HttpRequest) -> bool {
+    match request.get_header::<server::http::header::IfNoneMatch>() {
+        Some(server::http::header::IfNoneMatch::Any) => false,
+        Some(server::http::header::IfNoneMatch::Items(ref items)) => {
             if let Some(some_etag) = etag {
                 for item in items {
                     if item.weak_eq(some_etag) {

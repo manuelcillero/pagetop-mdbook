@@ -20,4 +20,4 @@ static-files = "0.2.3"
 maud = "0.24.0"
 
 [build-dependencies]
-pagetop = { path = "../PageTop/pagetop", version = "0.0" }
+pagetop-build = { path = "../PageTop/pagetop-build", version = "0.0" }
