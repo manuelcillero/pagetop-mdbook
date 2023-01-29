@@ -7,12 +7,10 @@ pub fn except_mdbook_common_resources(p: &Path) -> bool {
         Some("tomorrow-niht.css") => false,
         _ => {
             if let Some(parent) = p.parent() {
-                match parent.to_str() {
-                    Some("/css") => false,
-                    Some("/FontAwesome") => false,
-                    Some("/fonts") => false,
-                    _ => true,
-                }
+                !matches!(
+                    parent.to_str(),
+                    Some("/css") | Some("/FontAwesome") | Some("/fonts")
+                )
             } else {
                 true
             }

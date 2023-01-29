@@ -151,7 +151,10 @@ async fn mdbook_resource(
 }
 
 /// Returns true if `request` has no `If-Match` header or one which matches `etag`.
-fn any_match(etag: Option<&server::http::header::EntityTag>, request: &server::HttpRequest) -> bool {
+fn any_match(
+    etag: Option<&server::http::header::EntityTag>,
+    request: &server::HttpRequest,
+) -> bool {
     match request.get_header::<server::http::header::IfMatch>() {
         None | Some(server::http::header::IfMatch::Any) => true,
         Some(server::http::header::IfMatch::Items(ref items)) => {
@@ -168,7 +171,10 @@ fn any_match(etag: Option<&server::http::header::EntityTag>, request: &server::H
 }
 
 /// Returns true if `request` doesn't have an `If-None-Match` header matching `req`.
-fn none_match(etag: Option<&server::http::header::EntityTag>, request: &server::HttpRequest) -> bool {
+fn none_match(
+    etag: Option<&server::http::header::EntityTag>,
+    request: &server::HttpRequest,
+) -> bool {
     match request.get_header::<server::http::header::IfNoneMatch>() {
         Some(server::http::header::IfNoneMatch::Any) => false,
         Some(server::http::header::IfNoneMatch::Items(ref items)) => {
