@@ -1,8 +1,9 @@
 use pagetop::prelude::*;
+use pagetop_minimal::component::*;
 
 pub mod util;
 
-pub_handle!(MODULE_MDBOOK);
+define_handle!(MODULE_MDBOOK);
 
 include!(concat!(env!("OUT_DIR"), "/mdbook.rs"));
 
@@ -11,6 +12,10 @@ pub struct MdBook;
 impl ModuleTrait for MdBook {
     fn handle(&self) -> Handle {
         MODULE_MDBOOK
+    }
+
+    fn dependencies(&self) -> Vec<ModuleStaticRef> {
+        vec![&pagetop_minimal::Minimal]
     }
 }
 

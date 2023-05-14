@@ -1,6 +1,6 @@
 [package]
 name = "pagetop-mdbook"
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 
 authors = [
@@ -15,9 +15,10 @@ repository = "https://github.com/manuelcillero/pagetop-mdbook"
 license = "Apache-2.0 OR MIT"
 
 [dependencies]
-pagetop = { path = "../PageTop/pagetop", version = "0.0" }
+pagetop = { version = "0.0", path = "../PageTop/pagetop" }
+pagetop-minimal = { version = "0.0", path = "../PageTop/pagetop-minimal" }
 static-files = "0.2.3"
-maud = "0.24.0"
+maud = "0.25.0"
 
 [build-dependencies]
-pagetop-build = { path = "../PageTop/pagetop-build", version = "0.0" }
+pagetop-build = { version = "0.0", path = "../PageTop/pagetop-build" }
