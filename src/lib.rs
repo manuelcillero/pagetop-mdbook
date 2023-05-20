@@ -17,13 +17,13 @@ impl ModuleTrait for MdBook {
     fn dependencies(&self) -> Vec<ModuleStaticRef> {
         vec![&pagetop_minimal::Minimal]
     }
+
+    fn configure_service(&self, cfg: &mut server::web::ServiceConfig) {
+        serve_static_files!(cfg, "/mdbook", bundle_mdbook);
+    }
 }
 
 impl MdBook {
-    pub fn configure_service_for_common_resources(cfg: &mut server::web::ServiceConfig) {
-        serve_static_files!(cfg, "/mdbook/static", bundle_mdbook);
-    }
-
     pub fn configure_service_for_mdbook(
         cfg: &mut server::web::ServiceConfig,
         mdbook_path: &'static str,
@@ -56,7 +56,7 @@ async fn mdbook_page(
     let path_len = mdbook_path.len() + 1;
     if let Some(content) = mdbook_map.get(&request.path()[path_len..]) {
         if let Ok(html) = std::str::from_utf8(content.data) {
-            let _lang = extract("Lang", html);
+            let lang = extract("Lang", html).unwrap_or("fr");
             let title = match extract("Title", html) {
                 Some(title) => title,
                 _ => "Documentación",
@@ -73,34 +73,35 @@ async fn mdbook_page(
 
             Page::new(request)
                 .with_title(title)
+                .with_language(lang)
                 .with_metadata("theme-color", "#ffffff")
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/css/variables.css",
+                    "/mdbook/css/variables.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/css/general.css",
+                    "/mdbook/css/general.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/css/chrome.css",
+                    "/mdbook/css/chrome.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(
-                    StyleSheet::located("/mdbook/static/css/print.css")
+                    StyleSheet::located("/mdbook/css/print.css")
                         .for_media(TargetMedia::Print),
                 ))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/FontAwesome/css/font-awesome.css",
+                    "/mdbook/FontAwesome/css/font-awesome.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/fonts/fonts.css",
+                    "/mdbook/fonts/fonts.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/highlight.css",
+                    "/mdbook/highlight.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/tomorrow-night.css",
+                    "/mdbook/tomorrow-night.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
-                    "/mdbook/static/ayu-highlight.css",
+                    "/mdbook/ayu-highlight.css",
                 )))
                 .with_this_in(
                     "region-content",
