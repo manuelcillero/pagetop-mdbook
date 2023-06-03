@@ -56,7 +56,9 @@ async fn mdbook_page(
     let path_len = mdbook_path.len() + 1;
     if let Some(content) = mdbook_map.get(&request.path()[path_len..]) {
         if let Ok(html) = std::str::from_utf8(content.data) {
-            let lang = extract("Lang", html).unwrap_or("fr");
+            let lang = langid_for(extract("Lang", html).unwrap_or(""))
+                .language
+                .as_str();
             let title = match extract("Title", html) {
                 Some(title) => title,
                 _ => "Documentación",
@@ -72,7 +74,7 @@ async fn mdbook_page(
             };
 
             Page::new(request)
-                .with_title(title)
+                .with_title(L10n::text(title))
                 .with_language(lang)
                 .with_metadata("theme-color", "#ffffff")
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
@@ -85,8 +87,7 @@ async fn mdbook_page(
                     "/mdbook/css/chrome.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(
-                    StyleSheet::located("/mdbook/css/print.css")
-                        .for_media(TargetMedia::Print),
+                    StyleSheet::located("/mdbook/css/print.css").for_media(TargetMedia::Print),
                 ))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/FontAwesome/css/font-awesome.css",
@@ -107,7 +108,7 @@ async fn mdbook_page(
                     "region-content",
                     Container::new()
                         .with_id("mdbook")
-                        .with_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
+                        .with_component(L10n::html(html! { (PreEscaped(&html[beginning..])) })),
                 )
                 .render()
         } else {
