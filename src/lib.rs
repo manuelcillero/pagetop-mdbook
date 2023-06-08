@@ -105,7 +105,7 @@ async fn mdbook_page(
                     "/mdbook/ayu-highlight.css",
                 )))
                 .with_this_in(
-                    "region-content",
+                    "content",
                     Container::new()
                         .with_id("mdbook")
                         .with_component(L10n::html(html! { (PreEscaped(&html[beginning..])) })),
