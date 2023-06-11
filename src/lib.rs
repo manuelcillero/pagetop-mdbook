@@ -18,29 +18,29 @@ impl ModuleTrait for MdBook {
         vec![&pagetop_minimal::Minimal]
     }
 
-    fn configure_service(&self, cfg: &mut server::web::ServiceConfig) {
+    fn configure_service(&self, cfg: &mut service::web::ServiceConfig) {
         serve_static_files!(cfg, "/mdbook", bundle_mdbook);
     }
 }
 
 impl MdBook {
     pub fn configure_service_for_mdbook(
-        cfg: &mut server::web::ServiceConfig,
+        cfg: &mut service::web::ServiceConfig,
         mdbook_path: &'static str,
         mdbook_map: &'static HashMapResources,
     ) {
         let path = mdbook_path.trim_end_matches('/');
         cfg.service(
-            server::web::scope(path)
+            service::web::scope(path)
                 .route(
                     "{tail:.*html$}",
-                    server::web::get().to(move |request: server::HttpRequest| {
+                    service::web::get().to(move |request: service::HttpRequest| {
                         mdbook_page(request, path, mdbook_map)
                     }),
                 )
                 .route(
                     "{tail:.*$}",
-                    server::web::get().to(move |request: server::HttpRequest| {
+                    service::web::get().to(move |request: service::HttpRequest| {
                         mdbook_resource(request, path, mdbook_map)
                     }),
                 ),
@@ -49,7 +49,7 @@ impl MdBook {
 }
 
 async fn mdbook_page(
-    request: server::HttpRequest,
+    request: service::HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
 ) -> ResultPage<Markup, FatalError> {
@@ -74,7 +74,7 @@ async fn mdbook_page(
             };
 
             Page::new(request)
-                .with_title(L10n::text(title))
+                .with_title(L10n::n(title))
                 .with_language(lang)
                 .with_metadata("theme-color", "#ffffff")
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
@@ -104,11 +104,11 @@ async fn mdbook_page(
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/ayu-highlight.css",
                 )))
-                .with_this_in(
+                .with_in(
                     "content",
                     Container::new()
                         .with_id("mdbook")
-                        .with_component(L10n::html(html! { (PreEscaped(&html[beginning..])) })),
+                        .with_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
                 )
                 .render()
         } else {
@@ -120,15 +120,15 @@ async fn mdbook_page(
 }
 
 async fn mdbook_resource(
-    request: server::HttpRequest,
+    request: service::HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
-) -> server::HttpResponse {
+) -> service::HttpResponse {
     let path_len = mdbook_path.len() + 1;
     // From https://github.com/kilork/actix-web-static-files/blob/master/src/resource_files.rs, see
     // functions respond_to(), any_match() and none_match().
     if let Some(file) = &mdbook_map.get(&request.path()[path_len..]) {
-        let etag = Some(server::http::header::EntityTag::new_strong(format!(
+        let etag = Some(service::http::header::EntityTag::new_strong(format!(
             "{:x}:{:x}",
             file.data.len(),
             file.modified
@@ -138,11 +138,11 @@ async fn mdbook_resource(
 
         let not_modified = !none_match(etag.as_ref(), &request);
 
-        let mut resp = server::HttpResponse::build(server::http::StatusCode::OK);
-        resp.insert_header((server::http::header::CONTENT_TYPE, file.mime_type));
+        let mut resp = service::HttpResponse::build(service::http::StatusCode::OK);
+        resp.insert_header((service::http::header::CONTENT_TYPE, file.mime_type));
 
         if let Some(etag) = etag {
-            resp.insert_header(server::http::header::ETag(etag));
+            resp.insert_header(service::http::header::ETag(etag));
         }
 
         if precondition_failed {
@@ -159,12 +159,12 @@ async fn mdbook_resource(
 
 /// Returns true if `request` has no `If-Match` header or one which matches `etag`.
 fn any_match(
-    etag: Option<&server::http::header::EntityTag>,
-    request: &server::HttpRequest,
+    etag: Option<&service::http::header::EntityTag>,
+    request: &service::HttpRequest,
 ) -> bool {
-    match request.get_header::<server::http::header::IfMatch>() {
-        None | Some(server::http::header::IfMatch::Any) => true,
-        Some(server::http::header::IfMatch::Items(ref items)) => {
+    match request.get_header::<service::http::header::IfMatch>() {
+        None | Some(service::http::header::IfMatch::Any) => true,
+        Some(service::http::header::IfMatch::Items(ref items)) => {
             if let Some(some_etag) = etag {
                 for item in items {
                     if item.strong_eq(some_etag) {
@@ -179,12 +179,12 @@ fn any_match(
 
 /// Returns true if `request` doesn't have an `If-None-Match` header matching `req`.
 fn none_match(
-    etag: Option<&server::http::header::EntityTag>,
-    request: &server::HttpRequest,
+    etag: Option<&service::http::header::EntityTag>,
+    request: &service::HttpRequest,
 ) -> bool {
-    match request.get_header::<server::http::header::IfNoneMatch>() {
-        Some(server::http::header::IfNoneMatch::Any) => false,
-        Some(server::http::header::IfNoneMatch::Items(ref items)) => {
+    match request.get_header::<service::http::header::IfNoneMatch>() {
+        Some(service::http::header::IfNoneMatch::Any) => false,
+        Some(service::http::header::IfNoneMatch::Items(ref items)) => {
             if let Some(some_etag) = etag {
                 for item in items {
                     if item.weak_eq(some_etag) {
