@@ -3,9 +3,9 @@ use pagetop_minimal::component::*;
 
 pub mod util;
 
-define_handle!(MODULE_MDBOOK);
+use_handle!(MODULE_MDBOOK);
 
-include!(concat!(env!("OUT_DIR"), "/mdbook.rs"));
+use_static!(mdbook);
 
 pub struct MdBook;
 
@@ -19,7 +19,7 @@ impl ModuleTrait for MdBook {
     }
 
     fn configure_service(&self, cfg: &mut service::web::ServiceConfig) {
-        serve_static_files!(cfg, "/mdbook", bundle_mdbook);
+        serve_static_files!(cfg, "/mdbook", mdbook);
     }
 }
 
