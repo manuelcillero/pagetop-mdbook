@@ -56,9 +56,7 @@ async fn mdbook_page(
     let path_len = mdbook_path.len() + 1;
     if let Some(content) = mdbook_map.get(&request.path()[path_len..]) {
         if let Ok(html) = std::str::from_utf8(content.data) {
-            let lang = langid_for(extract("Lang", html).unwrap_or(""))
-                .language
-                .as_str();
+            let lang = langid_for(extract("Lang", html).unwrap_or(""));
             let title = match extract("Title", html) {
                 Some(title) => title,
                 _ => "Documentación",
@@ -75,8 +73,8 @@ async fn mdbook_page(
 
             Page::new(request)
                 .with_title(L10n::n(title))
-                .with_language(lang)
                 .with_metadata("theme-color", "#ffffff")
+                .with_context(ContextOp::LangId(lang))
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
                     "/mdbook/css/variables.css",
                 )))
