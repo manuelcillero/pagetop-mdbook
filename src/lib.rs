@@ -75,31 +75,31 @@ async fn mdbook_page(
                 .with_title(L10n::n(title))
                 .with_metadata("theme-color", "#ffffff")
                 .with_context(ContextOp::LangId(lang))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/variables.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/general.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/chrome.css",
                 )))
                 .with_context(ContextOp::AddStyleSheet(
-                    StyleSheet::located("/mdbook/css/print.css").for_media(TargetMedia::Print),
+                    StyleSheet::at("/mdbook/css/print.css").for_media(TargetMedia::Print),
                 ))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/FontAwesome/css/font-awesome.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/fonts/fonts.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/highlight.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/tomorrow-night.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::located(
+                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/ayu-highlight.css",
                 )))
                 .with_in(
