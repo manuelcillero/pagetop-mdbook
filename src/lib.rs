@@ -3,9 +3,9 @@ use pagetop_minimal::component::*;
 
 pub mod util;
 
-use_handle!(MODULE_MDBOOK);
+new_handle!(MODULE_MDBOOK);
 
-use_static!(mdbook);
+static_files!(mdbook);
 
 pub struct MdBook;
 
@@ -14,23 +14,23 @@ impl ModuleTrait for MdBook {
         MODULE_MDBOOK
     }
 
-    fn dependencies(&self) -> Vec<ModuleStaticRef> {
+    fn dependencies(&self) -> Vec<ModuleRef> {
         vec![&pagetop_minimal::Minimal]
     }
 
-    fn configure_service(&self, cfg: &mut service::web::ServiceConfig) {
-        serve_static_files!(cfg, "/mdbook", mdbook);
+    fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
+        serve_static_files!(scfg, "/mdbook", mdbook);
     }
 }
 
 impl MdBook {
     pub fn configure_service_for_mdbook(
-        cfg: &mut service::web::ServiceConfig,
+        scfg: &mut service::web::ServiceConfig,
         mdbook_path: &'static str,
         mdbook_map: &'static HashMapResources,
     ) {
         let path = mdbook_path.trim_end_matches('/');
-        cfg.service(
+        scfg.service(
             service::web::scope(path)
                 .route(
                     "{tail:.*html$}",
