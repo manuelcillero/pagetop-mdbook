@@ -19,7 +19,7 @@ impl ModuleTrait for MdBook {
     }
 
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
-        serve_static_files!(scfg, "/mdbook", mdbook);
+        static_files_service!(scfg, "/mdbook", mdbook);
     }
 }
 
