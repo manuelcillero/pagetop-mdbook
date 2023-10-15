@@ -1,6 +1,6 @@
 [package]
 name = "pagetop-mdbook"
-version = "0.0.10"
+version = "0.0.11"
 edition = "2021"
 
 authors = [
@@ -16,7 +16,6 @@ license = "Apache-2.0 OR MIT"
 
 [dependencies]
 pagetop = { version = "0.0", path = "../PageTop/pagetop" }
-pagetop-minimal = { version = "0.0", path = "../PageTop/pagetop-minimal" }
 static-files = "0.2.3"
 
 [build-dependencies]

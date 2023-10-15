@@ -1,5 +1,4 @@
 use pagetop::prelude::*;
-use pagetop_minimal::component::*;
 
 pub mod util;
 
@@ -12,10 +11,6 @@ pub struct MdBook;
 impl ModuleTrait for MdBook {
     fn handle(&self) -> Handle {
         MODULE_MDBOOK
-    }
-
-    fn dependencies(&self) -> Vec<ModuleRef> {
-        vec![&pagetop_minimal::Minimal]
     }
 
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
@@ -104,7 +99,7 @@ async fn mdbook_page(
                 )))
                 .with_in(
                     "content",
-                    Container::new()
+                    Wrapper::new()
                         .with_id("mdbook")
                         .with_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
                 )
