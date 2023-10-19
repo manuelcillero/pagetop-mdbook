@@ -2,13 +2,6 @@
 
 @import 'variables.css';
 
-::-webkit-scrollbar {
-	background: var(--bg);
-}
-::-webkit-scrollbar-thumb {
-	background: var(--scrollbar);
-}
-
 #mdbook {
 	position: relative;
 	scrollbar-color: var(--scrollbar) var(--bg);
@@ -272,6 +265,12 @@
 #mdbook pre > code {
 	padding: 1rem;
 	font-size: 0.875rem;
+}
+#mdbook pre > code::-webkit-scrollbar {
+	background: var(--bg);
+}
+#mdbook pre > code::-webkit-scrollbar-thumb {
+	background: var(--scrollbar);
 }
 
 /* FIXME: ACE editors overlap their buttons because ACE does absolute
