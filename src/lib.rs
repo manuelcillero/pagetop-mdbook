@@ -97,11 +97,12 @@ async fn mdbook_page(
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/ayu-highlight.css",
                 )))
+                .with_skip_to("mdbook")
                 .with_in(
                     "content",
                     Wrapper::new()
                         .with_id("mdbook")
-                        .with_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
+                        .add_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
                 )
                 .render()
         } else {
