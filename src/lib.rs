@@ -4,7 +4,7 @@ pub mod util;
 
 new_handle!(MODULE_MDBOOK);
 
-static_files!(mdbook);
+new_static_files!(mdbook);
 
 pub struct MdBook;
 
@@ -14,12 +14,12 @@ impl ModuleTrait for MdBook {
     }
 
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
-        static_files_service!(scfg, "/mdbook", mdbook);
+        service_for_static_files!(scfg, "/mdbook", mdbook);
     }
 }
 
 impl MdBook {
-    pub fn configure_service_for_mdbook(
+    pub fn service_for_mdbook(
         scfg: &mut service::web::ServiceConfig,
         mdbook_path: &'static str,
         mdbook_map: &'static HashMapResources,
@@ -51,7 +51,7 @@ async fn mdbook_page(
     let path_len = mdbook_path.len() + 1;
     if let Some(content) = mdbook_map.get(&request.path()[path_len..]) {
         if let Ok(html) = std::str::from_utf8(content.data) {
-            let lang = langid_for(extract("Lang", html).unwrap_or(""));
+            let lang = langid_for(extract("Lang", html).unwrap_or("")).unwrap_or(&LANGID_FALLBACK);
             let title = match extract("Title", html) {
                 Some(title) => title,
                 _ => "Documentación",
