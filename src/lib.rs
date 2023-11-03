@@ -2,19 +2,15 @@ use pagetop::prelude::*;
 
 pub mod util;
 
-new_handle!(MODULE_MDBOOK);
-
-new_static_files!(mdbook);
+static_files!(mdbook);
 
 pub struct MdBook;
 
-impl ModuleTrait for MdBook {
-    fn handle(&self) -> Handle {
-        MODULE_MDBOOK
-    }
+impl_handle!(MODULE_MDBOOK for MdBook);
 
+impl ModuleTrait for MdBook {
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
-        service_for_static_files!(scfg, "/mdbook", mdbook);
+        service_for_static_files!(scfg, mdbook => "/mdbook");
     }
 }
 
