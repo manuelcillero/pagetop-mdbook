@@ -4,9 +4,8 @@ pub mod util;
 
 static_files!(mdbook);
 
+#[derive(AssignHandle)]
 pub struct MdBook;
-
-impl_handle!(MODULE_MDBOOK for MdBook);
 
 impl ModuleTrait for MdBook {
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
