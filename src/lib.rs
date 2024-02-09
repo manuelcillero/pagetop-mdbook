@@ -7,7 +7,7 @@ static_files!(mdbook);
 #[derive(AssignHandle)]
 pub struct MdBook;
 
-impl ModuleTrait for MdBook {
+impl PackageTrait for MdBook {
     fn configure_service(&self, scfg: &mut service::web::ServiceConfig) {
         service_for_static_files!(scfg, mdbook => "/mdbook");
     }
@@ -42,7 +42,7 @@ async fn mdbook_page(
     request: service::HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
-) -> ResultPage<Markup, FatalError> {
+) -> ResultPage<Markup, ErrorPage> {
     let path_len = mdbook_path.len() + 1;
     if let Some(content) = mdbook_map.get(&request.path()[path_len..]) {
         if let Ok(html) = std::str::from_utf8(content.data) {
@@ -93,7 +93,7 @@ async fn mdbook_page(
                     "/mdbook/ayu-highlight.css",
                 )))
                 .with_skip_to("mdbook")
-                .with_in(
+                .with_component_in(
                     "content",
                     Wrapper::new()
                         .with_id("mdbook")
@@ -101,10 +101,10 @@ async fn mdbook_page(
                 )
                 .render()
         } else {
-            Err(FatalError::NotFound(request))
+            Err(ErrorPage::NotFound(request))
         }
     } else {
-        Err(FatalError::NotFound(request))
+        Err(ErrorPage::NotFound(request))
     }
 }
 
@@ -135,14 +135,14 @@ async fn mdbook_resource(
         }
 
         if precondition_failed {
-            return FatalError::PreconditionFailed(request).error_response();
+            return ErrorPage::PreconditionFailed(request).error_response();
         } else if not_modified {
-            return FatalError::NotModified(request).error_response();
+            return ErrorPage::NotModified(request).error_response();
         }
 
         resp.body(file.data)
     } else {
-        FatalError::NotFound(request).error_response()
+        ErrorPage::NotFound(request).error_response()
     }
 }
 
