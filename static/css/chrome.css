@@ -29,9 +29,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	background-color: var(--bg);
-	border-bottom-color: var(--bg);
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
+	border-bottom: 0;
 }
 #menu-bar.sticky,
 .js #menu-bar-hover-placeholder:hover + #menu-bar,
@@ -147,12 +145,13 @@
 	max-width: 150px;
 	min-width: 90px;
 
-	display: flex;
-	justify-content: center;
-	align-content: center;
-	flex-direction: column;
-
 	transition: color 0.5s, background-color 0.5s;
+}
+
+#mdbook .nav-chapters > i.fa {
+	display: block;
+	padding: 50px 0;
+	visibility: hidden;
 }
 
 #mdbook .nav-chapters:hover {
@@ -181,7 +180,7 @@
 
 #mdbook .next {
 	float: right;
-	right: var(--page-padding);
+	right: 0;
 }
 
 @media only screen and (max-width: 1080px) {

@@ -92,6 +92,9 @@ async fn mdbook_page(
                 .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/ayu-highlight.css",
                 )))
+                .with_context(ContextOp::AddJavaScript(JavaScript::at(
+                    "/mdbook/navigators.js",
+                )))
                 .with_skip_to("mdbook")
                 .with_component_in(
                     "content",

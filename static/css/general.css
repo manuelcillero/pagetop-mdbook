@@ -41,7 +41,8 @@
 #mdbook .hide-boring .boring { display: none; }
 #mdbook .hidden { display: none !important; }
 
-#mdbook h2, #mdbook h3 { margin-top: 2.5em; }
+#mdbook h1 { margin-top: 1.2em; }
+#mdbook h2, #mdbook h3 { margin-top: 1em; }
 #mdbook h4, #mdbook h5 { margin-top: 2em; }
 
 #mdbook .header + .header h3,
