@@ -4,7 +4,6 @@ pub mod util;
 
 static_files!(mdbook);
 
-#[derive(AssignHandle)]
 pub struct MdBook;
 
 impl PackageTrait for MdBook {
