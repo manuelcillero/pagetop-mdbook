@@ -23,22 +23,20 @@ impl MdBook {
             service::web::scope(path)
                 .route(
                     "{tail:.*html$}",
-                    service::web::get().to(move |request: service::HttpRequest| {
-                        mdbook_page(request, path, mdbook_map)
-                    }),
+                    service::web::get()
+                        .to(move |request: HttpRequest| mdbook_page(request, path, mdbook_map)),
                 )
                 .route(
                     "{tail:.*$}",
-                    service::web::get().to(move |request: service::HttpRequest| {
-                        mdbook_resource(request, path, mdbook_map)
-                    }),
+                    service::web::get()
+                        .to(move |request: HttpRequest| mdbook_resource(request, path, mdbook_map)),
                 ),
         );
     }
 }
 
 async fn mdbook_page(
-    request: service::HttpRequest,
+    request: HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
 ) -> ResultPage<Markup, ErrorPage> {
@@ -95,8 +93,7 @@ async fn mdbook_page(
                     "/mdbook/navigators.js",
                 )))
                 .with_skip_to("mdbook")
-                .with_component_in(
-                    "content",
+                .with_component(
                     Wrapper::new()
                         .with_id("mdbook")
                         .add_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
@@ -111,7 +108,7 @@ async fn mdbook_page(
 }
 
 async fn mdbook_resource(
-    request: service::HttpRequest,
+    request: HttpRequest,
     mdbook_path: &'static str,
     mdbook_map: &'static HashMapResources,
 ) -> service::HttpResponse {
@@ -149,10 +146,7 @@ async fn mdbook_resource(
 }
 
 /// Returns true if `request` has no `If-Match` header or one which matches `etag`.
-fn any_match(
-    etag: Option<&service::http::header::EntityTag>,
-    request: &service::HttpRequest,
-) -> bool {
+fn any_match(etag: Option<&service::http::header::EntityTag>, request: &HttpRequest) -> bool {
     match request.get_header::<service::http::header::IfMatch>() {
         None | Some(service::http::header::IfMatch::Any) => true,
         Some(service::http::header::IfMatch::Items(ref items)) => {
@@ -169,10 +163,7 @@ fn any_match(
 }
 
 /// Returns true if `request` doesn't have an `If-None-Match` header matching `req`.
-fn none_match(
-    etag: Option<&service::http::header::EntityTag>,
-    request: &service::HttpRequest,
-) -> bool {
+fn none_match(etag: Option<&service::http::header::EntityTag>, request: &HttpRequest) -> bool {
     match request.get_header::<service::http::header::IfNoneMatch>() {
         Some(service::http::header::IfNoneMatch::Any) => false,
         Some(service::http::header::IfNoneMatch::Items(ref items)) => {
