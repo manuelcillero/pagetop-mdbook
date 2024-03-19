@@ -61,43 +61,41 @@ async fn mdbook_page(
             Page::new(request)
                 .with_title(L10n::n(title))
                 .with_metadata("theme-color", "#ffffff")
-                .with_context(ContextOp::LangId(lang))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::LangId(lang))
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/variables.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/general.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/css/chrome.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(
+                .with_assets(AssetsOp::AddStyleSheet(
                     StyleSheet::at("/mdbook/css/print.css").for_media(TargetMedia::Print),
                 ))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/FontAwesome/css/font-awesome.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/fonts/fonts.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/highlight.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/tomorrow-night.css",
                 )))
-                .with_context(ContextOp::AddStyleSheet(StyleSheet::at(
+                .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/ayu-highlight.css",
                 )))
-                .with_context(ContextOp::AddJavaScript(JavaScript::at(
+                .with_assets(AssetsOp::AddJavaScript(JavaScript::at(
                     "/mdbook/navigators.js",
                 )))
                 .with_skip_to("mdbook")
-                .with_component(
-                    Wrapper::new()
-                        .with_id("mdbook")
-                        .add_component(Html::with(html! { (PreEscaped(&html[beginning..])) })),
-                )
+                .with_component(Container::new().with_id("mdbook").add_item(Flex::with(
+                    Html::with(html! { (PreEscaped(&html[beginning..])) }),
+                )))
                 .render()
         } else {
             Err(ErrorPage::NotFound(request))

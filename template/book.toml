@@ -5,4 +5,7 @@ src = "src"
 title = "mdBook Title"
 
 [build]
-build-dir = "../static/doc"
+build-dir = "path/to/static/doc"
+
+[output.html]
+theme = "path/to/theme"

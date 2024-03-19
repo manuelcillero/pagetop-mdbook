@@ -6,11 +6,9 @@
 }
 
 #mdbook,
-#page-wrapper {
-	margin: 0;
-	padding: 0;
-	max-width: none;
+#page-wrapper.page-wrapper {
 	transform: none !important;
+	margin-inline-start: 0px;
 	overflow-y: initial;
 }
 
@@ -25,11 +23,7 @@
 }
 
 #mdbook code {
-	background-color: #eeeeee;
-	border-radius: 5px;
-
-	/* Force background to be printed in Chrome */
-	-webkit-print-color-adjust: exact;
+	direction: ltr !important;
 }
 
 #mdbook pre > .buttons {
