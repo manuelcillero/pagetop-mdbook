@@ -1,6 +1,6 @@
 [package]
 name = "pagetop-mdbook"
-version = "0.0.17"
+version = "0.0.18"
 edition = "2021"
 
 description = "PageTop package to include mdBook content into PageTop applications."

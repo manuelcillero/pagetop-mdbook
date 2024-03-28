@@ -92,10 +92,10 @@ async fn mdbook_page(
                 .with_assets(AssetsOp::AddJavaScript(JavaScript::at(
                     "/mdbook/navigators.js",
                 )))
-                .with_skip_to("mdbook")
-                .with_component(Container::new().with_id("mdbook").add_item(Flex::with(
-                    Html::with(html! { (PreEscaped(&html[beginning..])) }),
-                )))
+                .with_body_skip_to("mdbook")
+                .with_component(flex::Container::new().with_id("mdbook").add_item(
+                    flex::Item::with(Html::with(html! { (PreEscaped(&html[beginning..])) })),
+                ))
                 .render()
         } else {
             Err(ErrorPage::NotFound(request))
