@@ -1,6 +1,6 @@
 [package]
 name = "pagetop-mdbook"
-version = "0.0.18"
+version = "0.0.19"
 edition = "2021"
 
 description = "PageTop package to include mdBook content into PageTop applications."
@@ -23,7 +23,7 @@ exclude = [
 
 [dependencies]
 pagetop = { version = "0.0", path = "../pagetop" }
-static-files = "0.2.3"
+static-files = "0.2.4"
 
 [build-dependencies]
 pagetop-build = { version = "0.0", path = "../pagetop/helpers/pagetop-build" }

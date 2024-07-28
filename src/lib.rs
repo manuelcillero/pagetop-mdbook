@@ -72,7 +72,7 @@ async fn mdbook_page(
                     "/mdbook/css/chrome.css",
                 )))
                 .with_assets(AssetsOp::AddStyleSheet(
-                    StyleSheet::at("/mdbook/css/print.css").for_media(TargetMedia::Print),
+                    StyleSheet::at("/mdbook/css/print.css").for_media(&TargetMedia::Print),
                 ))
                 .with_assets(AssetsOp::AddStyleSheet(StyleSheet::at(
                     "/mdbook/FontAwesome/css/font-awesome.css",
